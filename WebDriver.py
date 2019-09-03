@@ -25,7 +25,7 @@ from selenium.common.exceptions import NoSuchElementException
 
 # Module variables
 CHROME_PATH = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
-DRIVER_PATH = 'chromedriver'
+DRIVER_PATH = 'bin/chromedriver'
 CHROME_MINVER = '61'
 DRIVER_MINVER = '2.4'
 LOG_LEVEL = logging.DEBUG
