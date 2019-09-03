@@ -9,7 +9,7 @@
 #
 
 __author__ = "Adam Mikeal <adam@tamu.edu>"
-__version__ = "0.7"
+__version__ = "0.8"
 
 import os
 import sys
@@ -29,7 +29,6 @@ DRIVER_PATH = 'chromedriver'
 CHROME_MINVER = '61'
 DRIVER_MINVER = '2.4'
 LOG_LEVEL = logging.DEBUG
-AUTH_URL = 'https://cas.tamu.edu'
 DUO_TIMEOUT = 15
 
 # Set up logging
@@ -43,8 +42,9 @@ class AuthenticatedWeb(object):
 
 	TARGET_URL = None
 	DRIVER = None
+	AUTH_URL = 'https://cas.tamu.edu'
 
-	def __init__(self, url, chrome_path=None, chrome_driver=None, duo_timeout=None, log_level=None):
+	def __init__(self, url, chrome_path=None, chrome_driver=None, auth_url=None, duo_timeout=None, log_level=None):
 
 		# Set the log level first (if specified)
 		if log_level:
@@ -54,6 +54,7 @@ class AuthenticatedWeb(object):
 		self.TARGET_URL = url
 		LOG.info(f"Using target URL: {self.TARGET_URL}")
 
+		# Override the default binary paths if specified
 		if chrome_path:
 			self.CHROME_PATH = os.path.abspath(chrome_path)
 		else:
@@ -65,6 +66,10 @@ class AuthenticatedWeb(object):
 		else:
 			self.DRIVER_PATH = os.path.abspath(DRIVER_PATH)
 		LOG.info(f"Using selenium driver location: {self.DRIVER_PATH}")
+
+		# Override the default CAS URL if specified
+		if auth_url:
+			self.AUTH_URL = auth_url
 
 		if duo_timeout:
 			if isinstance(duo_timeout, int):
@@ -103,7 +108,7 @@ class AuthenticatedWeb(object):
 		self.DRIVER.get(self.TARGET_URL)
 
 		# Detect if CAS redirection happened
-		if AUTH_URL in self.DRIVER.current_url:
+		if self.AUTH_URL in self.DRIVER.current_url:
 			LOG.debug(f"Auth redirection detected; current URL: {self.DRIVER.current_url}")
 
 	def __repr__(self):
@@ -145,8 +150,8 @@ class AuthenticatedWeb(object):
 
 	def authenticate(self, netid, password, expect_duo=True):
 		# Check for AUTH_URL and exit if not seen
-		if AUTH_URL not in self.DRIVER.current_url:
-			LOG.error(f"Unable to perform authentication (expected {AUTH_URL}; current_url={self.DRIVER.current_url} )")	
+		if self.AUTH_URL not in self.DRIVER.current_url:
+			LOG.error(f"Unable to perform authentication (expected {self.AUTH_URL}; current_url={self.DRIVER.current_url} )")	
 			return False
 
 		# Start the auth process
