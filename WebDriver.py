@@ -163,7 +163,7 @@ class AuthenticatedWeb(object):
 			u_fld = self.DRIVER.find_element_by_id("username")
 			u_fld.clear()
 			u_fld.send_keys(netid)
-			u_fld.send_keys(Keys.RETURN)
+			u_fld.send_keys(Keys.TAB)
 
 			# Enter the password
 			p_fld = self.DRIVER.find_element_by_id("password")
